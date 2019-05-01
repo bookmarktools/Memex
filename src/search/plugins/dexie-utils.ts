@@ -67,15 +67,15 @@ export class DexieUtilsPlugin extends StorageBackendPlugin<
         const table = this.backend.dexieInstance.table(collection)
         let coll
 
-        if (opName == null) {
-            coll = table.toCollection()
-        } else {
-            const whereOp = table.where(fieldName)[opName] as any
-
-            coll =
-                typeof whereOp === 'function'
-                    ? whereOp(opValue)
-                    : table.toCollection()
+        switch (opName) {
+            case 'anyOf':
+                coll = table.where(fieldName).anyOf(opValue)
+                break
+            case 'equals':
+                coll = table.where(fieldName).equals(opValue)
+                break
+            default:
+                coll = table.toCollection()
         }
 
         if (filter) {
