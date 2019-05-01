@@ -40,7 +40,7 @@ export default class TagStorage extends StorageModule {
     })
 
     async fetchPageTags({ url }: { url: string }) {
-        const tags = await this.operation('fetchAllTagsOfPage', { url })
+        const tags = await this.operation('findAllTagsOfPage', { url })
         return tags.map(({ name }) => name)
     }
 

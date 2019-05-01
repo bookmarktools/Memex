@@ -56,15 +56,9 @@ export default class CustomListStorage extends StorageModule {
             findListsIncluding: {
                 collection: CustomListStorage.CUSTOM_LISTS_COLL,
                 operation: 'findObjects',
-                args: [
-                    {
-                        id: { $in: '$includedIds:array' },
-                    },
-                    {
-                        limit: '$limit:int',
-                        skip: '$skip:int',
-                    },
-                ],
+                args: {
+                    id: { $in: '$includedIds:array' },
+                },
             },
             findListsExcluding: {
                 collection: CustomListStorage.CUSTOM_LISTS_COLL,
@@ -84,10 +78,15 @@ export default class CustomListStorage extends StorageModule {
                 operation: 'findObject',
                 args: { id: '$id:pk' },
             },
-            findListEntries: {
+            findListEntriesByListId: {
                 collection: CustomListStorage.LIST_ENTRIES_COLL,
                 operation: 'findObjects',
-                args: { listId: '$listId:int', pageUrl: '$url:string' },
+                args: { listId: '$listId:int' },
+            },
+            findListEntriesByUrl: {
+                collection: CustomListStorage.LIST_ENTRIES_COLL,
+                operation: 'findObjects',
+                args: { pageUrl: '$url:string' },
             },
             findListEntriesByLists: {
                 collection: CustomListStorage.LIST_ENTRIES_COLL,
@@ -202,11 +201,11 @@ export default class CustomListStorage extends StorageModule {
     }: {
         listId: number
     }): Promise<PageListEntry[]> {
-        return this.operation('findListEntries', { listId })
+        return this.operation('findListEntriesByListId', { listId })
     }
 
     async fetchListPagesByUrl({ url }: { url: string }) {
-        const pages = await this.operation('findListEntries', { url })
+        const pages = await this.operation('findListEntriesByUrl', { url })
 
         const entriesByListId = new Map<number, any[]>()
         const listIds = new Set<string>()
@@ -311,7 +310,7 @@ export default class CustomListStorage extends StorageModule {
 
         const pageEntries = await this.operation('findListEntriesByLists', {
             listIds,
-            pageUrl: url,
+            url,
         })
 
         const entriesByListId = new Map<number, any[]>()

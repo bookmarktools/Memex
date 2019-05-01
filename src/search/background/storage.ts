@@ -46,21 +46,21 @@ export default class SearchStorage extends StorageModule {
         operations: {
             findAnnotBookmarksByUrl: {
                 collection: 'annotBookmarks',
-                operation: 'findAllObjects',
+                operation: 'findObjects',
                 args: { url: { $in: '$annotUrls:string[]' } },
             },
             findAnnotTagsByUrl: {
                 collection: 'tags',
-                operation: 'findAllObjects',
+                operation: 'findObjects',
                 args: [{ url: { $in: '$annotUrls:string[]' } }, { limit: 4 }],
             },
             searchAnnotsByDay: {
-                operation: AnnotationsListPlugin.LIST_BY_PAGE_OP_ID,
-                args: [],
+                operation: AnnotationsListPlugin.LIST_BY_DAY_OP_ID,
+                args: ['$params:any'],
             },
             searchAnnotsByTerm: {
                 operation: AnnotationsListPlugin.TERMS_SEARCH_OP_ID,
-                args: [],
+                args: ['$params:any'],
             },
             [PageUrlMapperPlugin.MAP_OP_ID]: {
                 operation: PageUrlMapperPlugin.MAP_OP_ID,
@@ -136,7 +136,7 @@ export default class SearchStorage extends StorageModule {
         const results: Map<
             number,
             Map<string, Annotation[]>
-        > = await this.operation('searchAnnotsByDay', params)
+        > = await this.operation('searchAnnotsByDay', { params })
 
         let pageUrls = new Set<string>()
 
@@ -144,11 +144,14 @@ export default class SearchStorage extends StorageModule {
             pageUrls = new Set([...pageUrls, ...annotsByPage.keys()])
         }
 
-        const pages: AnnotPage[] = await this.operation('mapUrlsToPages', {
-            pageUrls: [...pageUrls],
-            base64Img: params.base64Img,
-            upperTimeBound: params.endDate,
-        })
+        const pages: AnnotPage[] = await this.operation(
+            PageUrlMapperPlugin.MAP_OP_ID,
+            {
+                pageUrls: [...pageUrls],
+                base64Img: params.base64Img,
+                upperTimeBound: params.endDate,
+            },
+        )
 
         const clusteredResults: PageUrlsByDay = {}
 
@@ -218,14 +221,17 @@ export default class SearchStorage extends StorageModule {
     private async searchTermsAnnots(params: AnnotSearchParams) {
         const results: Map<string, Annotation[]> = await this.operation(
             'searchAnnotsByTerm',
-            params,
+            { params },
         )
 
-        const pages: AnnotPage[] = await this.operation('mapUrlsToPages', {
-            pageUrls: [...results.keys()],
-            base64Img: params.base64Img,
-            upperTimeBound: params.endDate,
-        })
+        const pages: AnnotPage[] = await this.operation(
+            PageUrlMapperPlugin.MAP_OP_ID,
+            {
+                pageUrls: [...results.keys()],
+                base64Img: params.base64Img,
+                upperTimeBound: params.endDate,
+            },
+        )
 
         const annotUrls = [].concat(...results.values()).map(annot => annot.url)
 

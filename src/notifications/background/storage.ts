@@ -31,13 +31,23 @@ export default class NotificationStorage extends StorageModule {
                 collection: NotificationStorage.NOTIFS_COLL,
                 operation: 'createObject',
             },
-            findNotificationsByRead: {
+            findUnreadNotifications: {
                 collection: NotificationStorage.NOTIFS_COLL,
                 operation: 'findObjects',
                 args: [
-                    { readTime: { $exists: '$isRead:boolean' } },
+                    { readTime: { $exists: false } },
                     {
-                        reverse: '$reverse:boolean',
+                        reverse: true,
+                    },
+                ],
+            },
+            findReadNotifications: {
+                collection: NotificationStorage.NOTIFS_COLL,
+                operation: 'findObjects',
+                args: [
+                    { readTime: { $exists: true } },
+                    {
+                        reverse: true,
                         limit: '$limit:int',
                         skip: '$skip:int',
                     },
@@ -66,16 +76,11 @@ export default class NotificationStorage extends StorageModule {
     }
 
     async fetchUnreadNotifications() {
-        return this.operation('findNotificationsByRead', {
-            isRead: false,
-            reverse: true,
-        })
+        return this.operation('findUnreadNotifications', {})
     }
 
-    async fetchReadNotifications({ limit, skip }) {
-        const results = await this.operation('findNotificationsByRead', {
-            isRead: true,
-            reverse: true,
+    async fetchReadNotifications({ limit = 10, skip = 0 }) {
+        const results = await this.operation('findReadNotifications', {
             limit,
             skip,
         })

@@ -1,4 +1,5 @@
 import { browser, Tabs, Storage } from 'webextension-polyfill-ts'
+import Storex from '@worldbrain/storex'
 import {
     withHistory,
     StorageModule,
@@ -7,14 +8,14 @@ import {
 
 import history from './storage.history'
 
-import { createPageFromTab, Tag, StorageManager, DBGet } from 'src/search'
+import { createPageFromTab, Tag, DBGet } from 'src/search'
 import { STORAGE_KEYS as IDXING_PREF_KEYS } from '../../options/settings/constants'
 import { AnnotationsListPlugin } from 'src/search/background/annots-list'
 import { AnnotSearchParams } from 'src/search/background/types'
 import { Annotation, AnnotListEntry } from '../types'
 
 export interface AnnotationStorageProps {
-    storageManager: StorageManager
+    storageManager: Storex
     browserStorageArea?: Storage.StorageArea
     annotationsColl?: string
     pagesColl?: string
@@ -36,12 +37,15 @@ export default class AnnotationStorage extends StorageModule {
     private _browserStorageArea: Storage.StorageArea
     private _getDb: DBGet
 
+    private db: Storex
+
     constructor({
         storageManager,
         browserStorageArea = browser.storage.local,
     }: AnnotationStorageProps) {
         super({ storageManager })
 
+        this.db = storageManager
         this._browserStorageArea = browserStorageArea
 
         this._getDb = async () => storageManager
@@ -121,25 +125,15 @@ export default class AnnotationStorage extends StorageModule {
                 },
             },
             operations: {
-                findListById: {
-                    collection: AnnotationStorage.LISTS_COLL,
-                    operation: 'findOneObject',
-                    args: { id: '$id:pk' },
-                },
                 findBookmarkByUrl: {
                     collection: AnnotationStorage.BMS_COLL,
-                    operation: 'findOneObject',
+                    operation: 'findObject',
                     args: { url: '$url:pk' },
                 },
                 findAnnotationByUrl: {
                     collection: AnnotationStorage.ANNOTS_COLL,
-                    operation: 'findOneObject',
+                    operation: 'findObject',
                     args: { url: '$url:pk' },
-                },
-                findTagsByAnnotation: {
-                    collection: AnnotationStorage.TAGS_COLL,
-                    operation: 'findOneObject',
-                    args: { url: '$url:string' },
                 },
                 createAnnotationForList: {
                     collection: AnnotationStorage.LIST_ENTRIES_COLL,
@@ -151,10 +145,6 @@ export default class AnnotationStorage extends StorageModule {
                 },
                 createAnnotation: {
                     collection: AnnotationStorage.ANNOTS_COLL,
-                    operation: 'createObject',
-                },
-                createTag: {
-                    collection: AnnotationStorage.TAGS_COLL,
                     operation: 'createObject',
                 },
                 editAnnotation: {
@@ -185,11 +175,6 @@ export default class AnnotationStorage extends StorageModule {
                     operation: 'deleteOneObject',
                     args: { url: '$url:pk' },
                 },
-                deleteTags: {
-                    collection: AnnotationStorage.TAGS_COLL,
-                    operation: 'deleteObjects',
-                    args: { name: '$name:string', url: '$url:string' },
-                },
                 listAnnotsByPage: {
                     operation: AnnotationsListPlugin.LIST_BY_PAGE_OP_ID,
                     args: ['$params:any'],
@@ -198,7 +183,9 @@ export default class AnnotationStorage extends StorageModule {
         })
 
     private async getListById({ listId }: { listId: number }) {
-        const list = await this.operation('findListById', { id: listId })
+        const list = await this.db
+            .collection(AnnotationStorage.LISTS_COLL)
+            .findOneObject<{ id: number }>({ id: listId })
 
         if (list == null) {
             throw new Error(`No list exists for ID: ${listId}`)
@@ -320,8 +307,16 @@ export default class AnnotationStorage extends StorageModule {
     }
 
     async getTagsByAnnotationUrl(url: string): Promise<Tag[]> {
-        return this.operation('findTagsByAnnotation', { url })
+        return this.db
+            .collection(AnnotationStorage.TAGS_COLL)
+            .findAllObjects<Tag>({ url })
     }
+
+    private deleteTags = (query: { name: string; url: string }) =>
+        this.db.collection(AnnotationStorage.TAGS_COLL).deleteObjects(query)
+
+    private createTag = tag =>
+        this.db.collection(AnnotationStorage.TAGS_COLL).createObject(tag)
 
     editAnnotationTags = async (
         tagsToBeAdded: string[],
@@ -331,23 +326,21 @@ export default class AnnotationStorage extends StorageModule {
         // Remove the tags that are to be deleted.
         await Promise.all(
             tagsToBeDeleted.map(async tag =>
-                this.operation('deleteTags', { name: tag, url }),
+                this.deleteTags({ name: tag, url }),
             ),
         )
 
         // Add the tags that are to be added.
         return Promise.all(
-            tagsToBeAdded.map(async tag =>
-                this.operation('createTag', { name: tag, url }),
-            ),
+            tagsToBeAdded.map(async tag => this.createTag({ name: tag, url })),
         )
     }
 
     modifyTags = (shouldAdd: boolean) => async (name: string, url: string) => {
         if (shouldAdd) {
-            this.operation('createTag', { name, url })
+            return this.createTag({ name, url })
         } else {
-            this.operation('deleteTags', { name, url })
+            return this.deleteTags({ name, url })
         }
     }
 }
