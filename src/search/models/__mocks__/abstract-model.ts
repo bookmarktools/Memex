@@ -1,8 +1,12 @@
+import Storex from '@worldbrain/storex'
+
 const dataURI = require('datauri')
 
 const datauri = new dataURI()
 
 export default abstract class AbstractModel {
+    constructor(protected db: Storex) {}
+
     public static DEF_NON_ENUM_PROP: PropertyDescriptor = {
         enumerable: false,
         writable: true,

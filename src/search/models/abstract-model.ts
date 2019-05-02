@@ -4,11 +4,7 @@ import Storex from '@worldbrain/storex'
  * Basic Model blueprint. Each Model representing a Dexie index table should extend this.
  */
 export default abstract class AbstractModel {
-    protected db: Storex
-
-    constructor(db: Storex) {
-        this.db = db
-    }
+    constructor(protected db: Storex) {}
 
     protected get collections() {
         return Object.keys(this.db.registry.collections)

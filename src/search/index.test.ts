@@ -1,3 +1,5 @@
+import Storex from '@worldbrain/storex'
+
 import initStorageManager from './memory-storex'
 import getDb, { setStorex } from './get-db'
 import * as idx from '.'
@@ -10,7 +12,7 @@ jest.mock('lodash/fp/flatten')
 jest.mock('lodash/fp/difference')
 
 describe('Search index integration', () => {
-    let storageManager
+    let storageManager: Storex
 
     async function insertTestData() {
         // Insert some test data for all tests to use
@@ -51,7 +53,7 @@ describe('Search index integration', () => {
     beforeEach(async () => {
         storageManager = initStorageManager()
         await storageManager.finishInitialization()
-        setStorex(storageManager.backend)
+        setStorex(storageManager)
         await resetTestData()
     })
 

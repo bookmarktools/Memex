@@ -1,3 +1,5 @@
+import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
+
 import initStorageManager from '../../search/memory-storex'
 import CustomListBackground from './'
 import * as DATA from './storage.test.data'
@@ -29,6 +31,10 @@ describe('Custom List Integrations', () => {
         // NOTE: Each test starts creating lists at ID `1`
         let fakeListCount = 0
         bg.generateListId = () => ++fakeListCount
+
+        registerModuleMapCollections(storageManager.registry, {
+            customList: bg.storage,
+        })
 
         await storageManager.finishInitialization()
         await insertTestData()

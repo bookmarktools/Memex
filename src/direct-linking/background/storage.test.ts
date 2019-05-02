@@ -1,4 +1,5 @@
 import Storex from '@worldbrain/storex'
+import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
 
 import initStorageManager from '../../search/memory-storex'
 import normalize from '../../util/encode-url-for-id'
@@ -61,7 +62,12 @@ describe('Annotations storage', () => {
             storageManager,
         })
         customListsBg = new CustomListBackground({ storageManager })
-        annotationStorage = annotBg['annotationStorage']
+        annotationStorage = annotBg.annotationStorage
+
+        registerModuleMapCollections(storageManager.registry, {
+            annotations: annotationStorage,
+            customList: customListsBg.storage,
+        })
 
         await storageManager.finishInitialization()
         await insertTestData()
