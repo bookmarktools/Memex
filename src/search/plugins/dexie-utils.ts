@@ -13,6 +13,7 @@ export interface GetPksProps {
 export class DexieUtilsPlugin extends StorageBackendPlugin<
     DexieStorageBackend
 > {
+    static FIND_BY_PK_OP = 'memex:dexie.findByPk'
     static GET_PKS_OP = 'memex:dexie.getPks'
     static NUKE_DB_OP = 'memex:dexie.recreateDatabase'
     static REGEXP_COUNT_OP = 'memex:dexie.countByRegexp'
@@ -21,6 +22,7 @@ export class DexieUtilsPlugin extends StorageBackendPlugin<
     install(backend: DexieStorageBackend) {
         super.install(backend)
 
+        backend.registerOperation(DexieUtilsPlugin.FIND_BY_PK_OP, this.findByPk)
         backend.registerOperation(DexieUtilsPlugin.GET_PKS_OP, this.getPks)
         backend.registerOperation(
             DexieUtilsPlugin.REGEXP_DELETE_OP,
@@ -99,4 +101,7 @@ export class DexieUtilsPlugin extends StorageBackendPlugin<
         await this.backend.dexieInstance.delete()
         await this.backend.dexieInstance.open()
     }
+
+    findByPk = <T = any>({ collection, pk }: { collection: string; pk: any }) =>
+        this.backend.dexieInstance.table<T>(collection).get(pk)
 }

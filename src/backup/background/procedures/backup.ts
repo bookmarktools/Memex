@@ -8,6 +8,8 @@ import { ObjectChangeBatch } from '../backend/types'
 import { isExcludedFromBackup } from '../utils'
 import { setLocalStorage } from 'src/util/storage'
 import { getLocalStorage } from '../../../util/storage'
+import { DexieUtilsPlugin } from 'src/search/plugins'
+
 const last = require('lodash/last')
 const pickBy = require('lodash/pickBy')
 
@@ -250,9 +252,13 @@ export default class BackupProcedure {
         // console.log('preparing batch')
         for (const change of batch.changes) {
             const object = pickBy(
-                await this.storageManager
-                    .collection(change.collection)
-                    .findByPk(change.objectPk),
+                await this.storageManager.operation(
+                    DexieUtilsPlugin.GET_PKS_OP,
+                    {
+                        collection: change.collection,
+                        pk: change.objectPk,
+                    },
+                ),
                 (val, key) => {
                     return key !== 'terms' && key.indexOf('_terms') === -1
                 },

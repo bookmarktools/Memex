@@ -19,31 +19,4 @@ export default () =>
             factory: window.indexedDB,
             range: IDBKeyRange,
         },
-        modifyInstance(storex: StorageManager) {
-            // Extend storex instance with Memex-specific methods
-            const oldMethod = storex.collection.bind(storex)
-            storex.collection = (name: string) => ({
-                ...oldMethod(name),
-                findByPk: function(pk) {
-                    return this.backend.dexie[name].get(pk)
-                }.bind(storex),
-                streamPks: async function*() {
-                    const table = this.backend.dexie[name]
-                    const pks = await table.toCollection().primaryKeys()
-                    for (const pk of pks) {
-                        yield pk
-                    }
-                }.bind(storex),
-                streamCollection: async function*() {
-                    const table = this.backend.dexie[name]
-                    for await (const pk of this.streamPks(name)) {
-                        yield await { pk, object: await table.get(pk) }
-                    }
-                }.bind(storex),
-            })
-
-            storex.deleteDB = window.indexedDB.deleteDatabase
-
-            return storex
-        },
     })
