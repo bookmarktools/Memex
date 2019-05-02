@@ -111,7 +111,7 @@ export default class CustomListStorage extends StorageModule {
             },
             updateListName: {
                 collection: CustomListStorage.CUSTOM_LISTS_COLL,
-                operation: 'updateOneObject',
+                operation: 'updateObject',
                 args: [
                     {
                         id: '$id:pk',
@@ -126,10 +126,15 @@ export default class CustomListStorage extends StorageModule {
             },
             deleteList: {
                 collection: CustomListStorage.CUSTOM_LISTS_COLL,
-                operation: 'deleteOneObject',
+                operation: 'deleteObject',
                 args: { id: '$id:pk' },
             },
-            deleteListEntries: {
+            deleteListEntriesByListId: {
+                collection: CustomListStorage.LIST_ENTRIES_COLL,
+                operation: 'deleteObjects',
+                args: { listId: '$listId:pk' },
+            },
+            deleteListEntriesById: {
                 collection: CustomListStorage.LIST_ENTRIES_COLL,
                 operation: 'deleteObjects',
                 args: { listId: '$listId:pk', pageUrl: '$url:string' },
@@ -212,7 +217,7 @@ export default class CustomListStorage extends StorageModule {
 
         pages.forEach(page => {
             listIds.add(page.listId)
-            const current = entriesByListId.get(page.listId)
+            const current = entriesByListId.get(page.listId) || []
             entriesByListId.set(page.listId, [...current, page.fullUrl])
         })
 
@@ -254,7 +259,9 @@ export default class CustomListStorage extends StorageModule {
 
     async removeList({ id }: { id: number }) {
         const list = await this.operation('deleteList', { id })
-        const pages = await this.operation('deleteListEntries', { listId: id })
+        const pages = await this.operation('deleteListEntriesByListId', {
+            listId: id,
+        })
         return { list, pages }
     }
 
@@ -286,7 +293,7 @@ export default class CustomListStorage extends StorageModule {
         listId: number
         pageUrl: string
     }) {
-        return this.operation('deleteListEntries', { listId, pageUrl })
+        return this.operation('deleteListEntriesById', { listId, pageUrl })
     }
 
     async fetchListNameSuggestions({
@@ -299,9 +306,13 @@ export default class CustomListStorage extends StorageModule {
         const suggestions = await this.operation(
             SuggestPlugin.SUGGEST_OBJS_OP_ID,
             {
-                name,
-                includePks: true,
-                limit: 5,
+                collection: CustomListStorage.CUSTOM_LISTS_COLL,
+                query: { name },
+                options: {
+                    includePks: true,
+                    ignoreCase: ['name'],
+                    limit: 5,
+                },
             },
         )
         const listIds = suggestions.map(({ pk }) => pk)

@@ -22,7 +22,7 @@ export const addPage = (getDb: DBGet) => async ({
         rejectNoContent,
     })
 
-    db.backend.operation(
+    return db.backend.operation(
         'transaction',
         { collections: collections(db) },
         async () => {
@@ -54,7 +54,7 @@ export const addPageTerms = (getDb: DBGet) => async (
     const db = await getDb()
     const pageData = await pipeline(pipelineReq)
 
-    db.backend.operation(
+    return db.backend.operation(
         'transaction',
         { collections: collections(db) },
         async () => {

@@ -149,7 +149,7 @@ export default class AnnotationStorage extends StorageModule {
                 },
                 editAnnotation: {
                     collection: AnnotationStorage.ANNOTS_COLL,
-                    operation: 'updateOneObject',
+                    operation: 'updateObject',
                     args: [
                         { url: '$url:pk' },
                         {
@@ -162,7 +162,7 @@ export default class AnnotationStorage extends StorageModule {
                 },
                 deleteAnnotation: {
                     collection: AnnotationStorage.ANNOTS_COLL,
-                    operation: 'deleteOneObject',
+                    operation: 'deleteObject',
                     args: { url: '$url:pk' },
                 },
                 deleteAnnotationFromList: {
@@ -172,7 +172,7 @@ export default class AnnotationStorage extends StorageModule {
                 },
                 deleteBookmarkByUrl: {
                     collection: AnnotationStorage.BMS_COLL,
-                    operation: 'deleteOneObject',
+                    operation: 'deleteObject',
                     args: { url: '$url:pk' },
                 },
                 listAnnotsByPage: {
