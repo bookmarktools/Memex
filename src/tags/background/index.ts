@@ -1,6 +1,6 @@
 import TagStorage from './storage'
 import { TabManager } from 'src/activity-logger/background/tab-manager'
-import { StorageManager } from 'src/search/types'
+import Storex from '@worldbrain/storex'
 import { makeRemotelyCallable } from 'src/util/webextensionRPC'
 import normalizeUrl from 'src/util/encode-url-for-id'
 import { Windows } from 'webextension-polyfill-ts'
@@ -23,7 +23,7 @@ export default class TagsBackground {
         tabMan,
         windows,
     }: {
-        storageManager: StorageManager
+        storageManager: Storex
         tabMan?: TabManager
         windows?: Windows.Static
     }) {

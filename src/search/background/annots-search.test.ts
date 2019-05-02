@@ -1,5 +1,6 @@
+import Storex from '@worldbrain/storex'
+
 import initStorageManager from '../memory-storex'
-import { StorageManager } from '..'
 import { setStorex } from '../get-db'
 import { AnnotationsListPlugin } from './annots-list'
 import * as DATA from './annots-search.test.data'
@@ -23,7 +24,7 @@ const countAnnots = (res: Map<number, Map<string, Annotation[]>>) => {
 describe.skip('annots search plugin', () => {
     let annotsBg: AnnotsBg
     let customListsBg: CustomListBg
-    let storageManager: StorageManager
+    let storageManager: Storex
 
     const search = (
         params: AnnotSearchParams,

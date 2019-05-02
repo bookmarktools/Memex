@@ -1,5 +1,6 @@
+import Storex from '@worldbrain/storex'
+
 import initStorageManager from '../memory-storex'
-import { StorageManager } from '..'
 import { setStorex } from '../get-db'
 import SearchBg from './index'
 import normalize from 'src/util/encode-url-for-id'
@@ -26,7 +27,7 @@ const countAnnots = res => {
 describe.skip('Annotations search', () => {
     let annotsStorage: AnnotsStorage
     let annotsBg: AnnotsBg
-    let storageManager: StorageManager
+    let storageManager: Storex
     let customListsBg: CustomListBg
     let searchBg: SearchBg
 

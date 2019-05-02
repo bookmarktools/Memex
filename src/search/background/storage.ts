@@ -1,9 +1,9 @@
+import Storex from '@worldbrain/storex'
 import {
     StorageModule,
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
 
-import { StorageManager } from '..'
 import {
     SearchParams as OldSearchParams,
     SearchResult as OldSearchResult,
@@ -16,7 +16,7 @@ import { AnnotationsListPlugin } from './annots-list'
 import { SuggestPlugin, SuggestType } from '../search/suggest'
 
 export interface SearchStorageProps {
-    storageManager: StorageManager
+    storageManager: Storex
     annotationsColl?: string
     legacySearch: (params: any) => Promise<any>
 }

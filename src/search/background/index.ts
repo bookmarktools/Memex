@@ -1,7 +1,7 @@
+import Storex from '@worldbrain/storex'
 import { browser, Bookmarks } from 'webextension-polyfill-ts'
 
 import * as index from '..'
-import { StorageManager } from '../types'
 import SearchStorage from './storage'
 import QueryBuilder from '../query-builder'
 import { TabManager } from 'src/activity-logger/background'
@@ -52,7 +52,7 @@ export default class SearchBackground {
         idx = index,
         bookmarksAPI = browser.bookmarks,
     }: {
-        storageManager: StorageManager
+        storageManager: Storex
         queryBuilder?: () => QueryBuilder
         tabMan: TabManager
         idx?: typeof index

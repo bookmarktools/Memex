@@ -4,11 +4,10 @@ import UrlField from './storage/url-field'
 import schemaPatcher from './storage/dexie-schema'
 import collections from './old-schema'
 import initStorex from './storex'
-import { StorageManager } from './types'
 import { plugins } from './storex-plugins'
 
 export default () =>
-    initStorex<StorageManager>({
+    initStorex({
         stemmer,
         collections,
         schemaPatcher,

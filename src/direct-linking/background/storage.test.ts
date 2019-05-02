@@ -1,14 +1,15 @@
+import Storex from '@worldbrain/storex'
+
 import initStorageManager from '../../search/memory-storex'
 import normalize from '../../util/encode-url-for-id'
 import AnnotationBackground from './'
 import AnnotationStorage from './storage'
-import { StorageManager } from '../../search'
 import CustomListBackground from 'src/custom-lists/background'
 import * as DATA from './storage.test.data'
 
 describe('Annotations storage', () => {
     let annotationStorage: AnnotationStorage
-    let storageManager: StorageManager
+    let storageManager: Storex
     let customListsBg: CustomListBackground
     let coll1Id: number
 

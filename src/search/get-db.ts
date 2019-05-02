@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 import Storex from '@worldbrain/storex'
+
 import { DBGet } from './types'
 
 /*

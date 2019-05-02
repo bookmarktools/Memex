@@ -1,7 +1,8 @@
 // tslint:disable:no-console
+import Storex from '@worldbrain/storex'
 import * as AllRaven from 'raven-js'
 import { EventEmitter } from 'events'
-import { StorageManager } from '../../../search/types'
+
 import BackupStorage, { LastBackupStorage } from '../storage'
 import { BackupBackend } from '../backend'
 import { ObjectChangeBatch } from '../backend/types'
@@ -24,7 +25,7 @@ export interface BackupProgressInfo {
 }
 
 export default class BackupProcedure {
-    storageManager: StorageManager
+    storageManager: Storex
     storage: BackupStorage
     backend: BackupBackend
     lastBackupStorage: LastBackupStorage
@@ -45,7 +46,7 @@ export default class BackupProcedure {
         lastBackupStorage,
         backend,
     }: {
-        storageManager: StorageManager
+        storageManager: Storex
         storage: BackupStorage
         lastBackupStorage: LastBackupStorage
         backend: BackupBackend
@@ -341,7 +342,7 @@ export function _shouldStoreBlobs() {
     return pref !== 'false'
 }
 
-export function getCurrentSchemaVersion(storageManager: StorageManager) {
+export function getCurrentSchemaVersion(storageManager: Storex) {
     const schemaVersions = Object.keys(
         storageManager.registry.collectionsByVersion,
     ).map(version => parseInt(version, 10))

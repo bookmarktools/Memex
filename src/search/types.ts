@@ -1,6 +1,4 @@
 import Storex, { FindManyOptions } from '@worldbrain/storex'
-import { StorageCollection } from '@worldbrain/storex/lib/types/manager'
-import { FilterQuery } from 'dexie-mongoify'
 
 export type DBGet = () => Promise<Storex>
 
@@ -10,24 +8,6 @@ export type SuggestResult<S, P> = Array<{
     suggestion: S
     pk: P
 }>
-
-interface MemexCollection extends StorageCollection {
-    suggestObjects<S, P = any>(
-        query,
-        options?: SuggestOptions,
-    ): Promise<SuggestResult<S, P>>
-    findByPk<T = any>(pk): Promise<T>
-    streamPks<K = any>(): AsyncIterableIterator<K>
-    streamCollection<K = any, T = any>(): AsyncIterableIterator<{
-        pk: K
-        object: T
-    }>
-}
-
-export interface StorageManager extends Storex {
-    collection(name: string): MemexCollection
-    deleteDB(name: string): IDBOpenDBRequest
-}
 
 export type VisitInput = number
 export type BookmarkInput = number

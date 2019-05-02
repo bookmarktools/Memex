@@ -1,9 +1,9 @@
+import Storex from '@worldbrain/storex'
 import {
     StorageModule,
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
 
-import { StorageManager } from '../../search/types'
 import { ObjectChangeBatch } from './backend/types'
 import { isExcludedFromBackup } from './utils'
 import setupChangeTracking from 'src/backup/background/change-hooks'
@@ -12,7 +12,7 @@ export default class BackupStorage extends StorageModule {
     static BACKUP_COLL = 'backupChanges'
 
     recordingChanges: boolean = false
-    private storageManager: StorageManager
+    private storageManager: Storex
 
     constructor({ storageManager }) {
         super({ storageManager })

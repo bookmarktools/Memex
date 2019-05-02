@@ -1,11 +1,12 @@
+import Storex from '@worldbrain/storex'
+import { Windows } from 'webextension-polyfill-ts'
+
 import { makeRemotelyCallable } from 'src/util/webextensionRPC'
 import normalizeUrl from 'src/util/encode-url-for-id'
 import CustomListStorage from './storage'
 import internalAnalytics from '../../analytics/internal'
 import { EVENT_NAMES } from '../../analytics/internal/constants'
 import { TabManager } from 'src/activity-logger/background/tab-manager'
-import { Windows } from 'webextension-polyfill-ts'
-import { StorageManager } from 'src/search/types'
 import { getPage } from 'src/search/util'
 import { createPageFromTab, DBGet } from 'src/search'
 import { Tab } from './types'
@@ -21,7 +22,7 @@ export default class CustomListBackground {
         tabMan,
         windows,
     }: {
-        storageManager: StorageManager
+        storageManager: Storex
         tabMan?: TabManager
         windows?: Windows.Static
     }) {

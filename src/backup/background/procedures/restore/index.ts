@@ -1,5 +1,6 @@
+import Storex from '@worldbrain/storex'
 import { EventEmitter } from 'events'
-import { StorageManager } from '../../../../search/types'
+
 import BackupStorage from '../../storage'
 import { BackupBackend, ObjectChange } from '../../backend'
 import Interruptable from '../interruptable'
@@ -16,7 +17,7 @@ export interface BackupRestoreInfo {
 }
 
 export class BackupRestoreProcedure {
-    storageManager: StorageManager
+    storageManager: Storex
     storage: BackupStorage
     backend: BackupBackend
 
@@ -32,7 +33,7 @@ export class BackupRestoreProcedure {
         backend,
         logErrors = true,
     }: {
-        storageManager: StorageManager
+        storageManager: Storex
         storage: BackupStorage
         backend: BackupBackend
         logErrors?: boolean
