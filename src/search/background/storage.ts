@@ -13,7 +13,7 @@ import { Annotation } from 'src/direct-linking/types'
 import { PageUrlMapperPlugin } from './page-url-mapper'
 import { reshapeParamsForOldSearch } from './utils'
 import { AnnotationsListPlugin } from './annots-list'
-import { SuggestPlugin, SuggestType } from '../search/suggest'
+import { SuggestPlugin, SuggestType } from '../plugins/suggest'
 
 export interface SearchStorageProps {
     storageManager: Storex
@@ -73,7 +73,7 @@ export default class SearchStorage extends StorageModule {
                     },
                 ],
             },
-            suggest: {
+            [SuggestPlugin.SUGGEST_OP_ID]: {
                 operation: SuggestPlugin.SUGGEST_OP_ID,
                 args: {
                     query: '$query:string',
@@ -81,7 +81,7 @@ export default class SearchStorage extends StorageModule {
                     limit: '$limit:number',
                 },
             },
-            suggestExtended: {
+            [SuggestPlugin.SUGGEST_EXT_OP_ID]: {
                 operation: SuggestPlugin.SUGGEST_EXT_OP_ID,
                 args: {
                     notInclude: '$notInclude:string[]',
@@ -93,13 +93,13 @@ export default class SearchStorage extends StorageModule {
     })
 
     suggest = (args: { query: string; type: SuggestType; limit?: number }) =>
-        this.operation('suggest', args)
+        this.operation(SuggestPlugin.SUGGEST_OP_ID, args)
 
     suggestExtended = (args: {
         notInclude?: string[]
         type: SuggestType
         limit?: number
-    }) => this.operation('suggestExtended', args)
+    }) => this.operation(SuggestPlugin.SUGGEST_EXT_OP_ID, args)
 
     private async findAnnotsDisplayData(
         annotUrls: string[],

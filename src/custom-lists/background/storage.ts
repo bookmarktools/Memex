@@ -2,8 +2,8 @@ import {
     StorageModule,
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
-import { SuggestPlugin, SuggestType } from 'src/search/search/suggest'
 
+import { SuggestPlugin } from 'src/search/plugins'
 import { PageList, PageListEntry } from './types'
 
 export default class CustomListStorage extends StorageModule {
@@ -134,7 +134,7 @@ export default class CustomListStorage extends StorageModule {
                 operation: 'deleteObjects',
                 args: { listId: '$listId:pk', pageUrl: '$url:string' },
             },
-            suggestLists: {
+            [SuggestPlugin.SUGGEST_OBJS_OP_ID]: {
                 operation: SuggestPlugin.SUGGEST_OBJS_OP_ID,
                 args: {
                     collection: '$collection:string',
@@ -296,11 +296,14 @@ export default class CustomListStorage extends StorageModule {
         name: string
         url: string
     }) {
-        const suggestions = await this.operation('suggestLists', {
-            name,
-            includePks: true,
-            limit: 5,
-        })
+        const suggestions = await this.operation(
+            SuggestPlugin.SUGGEST_OBJS_OP_ID,
+            {
+                name,
+                includePks: true,
+                limit: 5,
+            },
+        )
         const listIds = suggestions.map(({ pk }) => pk)
 
         const lists: PageList[] = suggestions.map(({ pk, suggestion }) => ({
