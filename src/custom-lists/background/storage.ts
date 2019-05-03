@@ -137,7 +137,7 @@ export default class CustomListStorage extends StorageModule {
             deleteListEntriesById: {
                 collection: CustomListStorage.LIST_ENTRIES_COLL,
                 operation: 'deleteObjects',
-                args: { listId: '$listId:pk', pageUrl: '$url:string' },
+                args: { listId: '$listId:pk', pageUrl: '$pageUrl:string' },
             },
             [SuggestPlugin.SUGGEST_OBJS_OP_ID]: {
                 operation: SuggestPlugin.SUGGEST_OBJS_OP_ID,
