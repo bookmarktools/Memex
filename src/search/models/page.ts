@@ -307,6 +307,12 @@ export default class Page extends AbstractModel
                     this.db
                         .collection('pages')
                         .deleteObjects({ url: this.url }),
+                    this.db
+                        .collection('pageListEntries')
+                        .deleteObjects({ pageUrl: this.url }),
+                    this.db
+                        .collection('annotations')
+                        .deleteObjects({ pageUrl: this.url }),
                 ])
             },
         )
