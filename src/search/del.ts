@@ -7,16 +7,10 @@ import { DexieUtilsPlugin } from './plugins/dexie-utils'
 
 const deletePages = async (getDb: DBGet, query: object) => {
     const db = await getDb()
-    return db.backend.operation(
-        'transaction',
-        { collections: collections(db) },
-        async () => {
-            const pages = await db.collection('pages').findObjects<Page>(query)
+    const pages = await db.collection('pages').findObjects<Page>(query)
 
-            await Promise.all(
-                pages.map(page => new Page(db, page).delete()),
-            ).catch(initErrHandler())
-        },
+    return Promise.all(pages.map(page => new Page(db, page).delete())).catch(
+        initErrHandler(),
     )
 }
 
