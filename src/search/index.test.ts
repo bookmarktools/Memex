@@ -109,7 +109,7 @@ describe('Search index integration', () => {
         })
 
         // TODO: Fix this feature
-        test.skip('boosted url term search', async () => {
+        test('boosted url term search', async () => {
             // Term appears in page 3's URL
             const { docs: docsTitle } = await search({ query: 'test' })
 
