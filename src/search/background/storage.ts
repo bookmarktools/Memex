@@ -77,7 +77,7 @@ export default class SearchStorage extends StorageModule {
                 operation: SuggestPlugin.SUGGEST_OP_ID,
                 args: {
                     query: '$query:string',
-                    type: '$query:string',
+                    type: '$type:string',
                     limit: '$limit:number',
                 },
             },
@@ -85,7 +85,7 @@ export default class SearchStorage extends StorageModule {
                 operation: SuggestPlugin.SUGGEST_EXT_OP_ID,
                 args: {
                     notInclude: '$notInclude:string[]',
-                    type: '$query:string',
+                    type: '$type:string',
                     limit: '$limit:number',
                 },
             },
