@@ -254,7 +254,7 @@ export default class BackupProcedure {
         for (const change of batch.changes) {
             const object = pickBy(
                 await this.storageManager.operation(
-                    DexieUtilsPlugin.GET_PKS_OP,
+                    DexieUtilsPlugin.FIND_BY_PK_OP,
                     {
                         collection: change.collection,
                         pk: change.objectPk,
